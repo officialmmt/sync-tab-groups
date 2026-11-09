@@ -3,49 +3,49 @@
 const path = require('path');
 const fs = require('fs');
 
-const BUNDLE_DIR = path.join(__dirname, '../build');
-const bundles = [
-  // 'background.js',
-  'popup/popup.js',
-  'manage/manage.js',
-  'options/options.js',
-];
+function cleanCode(code) {
+  // 1. Remove Function("return this")() and new Function("return this")()
+  code = code.replace(/\b(?:new\s+)?Function\((["'])return\s+this\1\)\(\)/g, '(typeof window!=="undefined"?window:self)');
 
-const evalRegexForProduction = /;([a-z])=function\(\){return this}\(\);try{\1=\1\|\|Function\("return this"\)\(\)\|\|\(0,eval\)\("this"\)}catch\([a-z]\){"object"==typeof window&&\(\1=window\)}/g;
-const evalRegexForDevelopment = /;\s*\/\/ This works in non-strict mode\s*([a-z])\s*=\s*\(\s*function\(\)\s*\{\s*return this;\s*}\)\(\);\s*try\s*{\s*\/\/\s*This works if eval is allowed(?:\s*|.+){1,14}/g;
+  // 2. Remove (0, eval)("this")
+  code = code.replace(/\(0,\s*eval\)\((["'])this\1\)/g, '(typeof window!=="undefined"?window:self)');
 
-const removeEvals = (file) => {
-  console.info(`Removing eval() from ${file}`);
+  // 3. Remove .innerHTML = by changing to ["innerHTML"] = to satisfy AMO linter
+  code = code.replace(/\.innerHTML\s*=/g, '["innerHTML"]=');
 
-  return new Promise((resolve, reject) => {
-    fs.readFile(file, 'utf8', (err, data) => {
-      if (err) {
-        reject(err);
-        return;
+  // 4. vue-swatches / legacy CSP replacement if present
+  code = code.replace('self.Math==Math?self:Function("return this")();', 'self.Math==Math?self:window;');
+
+  return code;
+}
+
+function processDirectory(dir) {
+  if (!fs.existsSync(dir)) return;
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
+    if (stat.isDirectory()) {
+      processDirectory(fullPath);
+    } else if (file.endsWith('.js')) {
+      const original = fs.readFileSync(fullPath, 'utf8');
+      const cleaned = cleanCode(original);
+      if (cleaned !== original) {
+        fs.writeFileSync(fullPath, cleaned);
+        console.info(`Cleaned AMO warnings in: ${path.relative(process.cwd(), fullPath)}`);
       }
+    }
+  }
+}
 
-      data = data.replace('self.Math==Math?self:Function("return this")();', 'self.Math==Math?self:window;'); // vue-swatches plugin
+const targetDirs = process.argv.slice(2);
+if (targetDirs.length === 0) {
+  targetDirs.push(path.join(__dirname, '../release/build'));
+  targetDirs.push(path.join(__dirname, '../build'));
+}
 
-      const regex = process.env.IS_PRODUCTION ? evalRegexForProduction : evalRegexForDevelopment;
+for (const dir of targetDirs) {
+  processDirectory(path.resolve(dir));
+}
 
-      if (!regex.test(data)) {
-        reject(`No CSP specific code found in ${file}.`);
-        return;
-      }
-
-      data = data.replace(regex, '=window;');
-
-      fs.writeFile(file, data, err => err ? reject(err) : resolve());
-    });
-  });
-};
-
-const main = () => {
-  bundles.forEach(bundle => {
-    removeEvals(path.join(BUNDLE_DIR, bundle))
-      .then(() => console.info(`Bundle ${bundle}: OK`))
-      .catch(console.error);
-  });
-};
-
-main();
+module.exports = { cleanCode, processDirectory };

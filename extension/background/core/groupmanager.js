@@ -821,7 +821,7 @@ GroupManager.addGroups = function(newGroups, {
   if (showNotification) {
     browser.notifications.create({
       "type": "basic",
-      "iconUrl": browser.extension.getURL("/share/icons/tabspace-active-64.png"),
+      "iconUrl": browser.runtime.getURL("/share/icons/tabspace-active-64.png"),
       "title": "Import Groups succeeded",
       "message": newGroups.length + " groups imported.",
       "eventTime": 4000,
@@ -966,7 +966,7 @@ GroupManager.init = async function() {
       if (group.windowId === -1) {
         browser.notifications.create(null, {
           "type": "basic",
-          "iconUrl": browser.extension.getURL("/share/icons/tabspace-active-64.png"),
+          "iconUrl": browser.runtime.getURL("/share/icons/tabspace-active-64.png"),
           "title": "Fail to find the window",
           "message": `For the group previously opened named "${Utils.getGroupTitle(group)}".You might check your groups to avoid data loss.`,
         });

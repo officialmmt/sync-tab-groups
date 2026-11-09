@@ -293,7 +293,7 @@ ContextMenu.SpecialActionMenuListener = function(info, tab) {
       BackgroundHelper.onOpenSettings();
       break;
     case "manage_groups":
-      Utils.openUrlOncePerWindow(browser.extension.getURL(
+      Utils.openUrlOncePerWindow(browser.runtime.getURL(
         "/manage/manage-groups.html"
       ));
       break;
@@ -305,7 +305,7 @@ ContextMenu.SpecialActionMenuListener = function(info, tab) {
       break;
     case "open_tests":
       Utils.openUrlOncePerWindow(
-        browser.extension.getURL("/tests/test-page/test-page.html"),
+        browser.runtime.getURL("/tests/test-page/test-page.html"),
         true,
       );
       break;

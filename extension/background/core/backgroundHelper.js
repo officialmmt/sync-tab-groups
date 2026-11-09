@@ -179,7 +179,7 @@ BackgroundHelper.onBookmarkSave = function() {
 };
 
 BackgroundHelper.onOpenSettings = function(active=true) {
-  Utils.openUrlOncePerWindow(browser.extension.getURL(
+  Utils.openUrlOncePerWindow(browser.runtime.getURL(
     "/options/option-page.html"
   ), active);
 };

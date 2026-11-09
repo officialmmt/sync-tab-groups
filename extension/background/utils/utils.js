@@ -200,7 +200,7 @@ Utils.extractLazyUrl = function(url="") {
 }
 
 Utils.getPrivilegedURL = function(title, url, favIconUrl) {
-  return browser.extension.getURL(Utils.PRIV_PAGE_URL) + "?" +
+  return browser.runtime.getURL(Utils.PRIV_PAGE_URL) + "?" +
     "title=" + encodeURIComponent(title|| "") +
     "&url=" + encodeURIComponent(url) +
     "&favIconUrl=" + encodeURIComponent(favIconUrl|| "");
@@ -210,7 +210,7 @@ Utils.getDiscardedURL = function(title, url, favIconUrl) {
   if (url === TAB_CONSTANTS.NEW_TAB || url === "about:blank" || url.includes("chrome://newtab")) {
     return url;
   } else {
-    return browser.extension.getURL(Utils.LAZY_PAGE_URL) + "?" +
+    return browser.runtime.getURL(Utils.LAZY_PAGE_URL) + "?" +
       "title=" + encodeURIComponent(title|| "") +
       "&url=" + encodeURIComponent(url) +
       "&favIconUrl=" + encodeURIComponent(favIconUrl|| "");

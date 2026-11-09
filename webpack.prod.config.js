@@ -3,6 +3,26 @@ const webpack = require('webpack');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const cssnano = require('cssnano');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const { cleanCode } = require('./scripts/remove-evals');
+
+class CleanForAmoPlugin {
+  apply(compiler) {
+    compiler.hooks.emit.tap('CleanForAmoPlugin', compilation => {
+      for (const basename in compilation.assets) {
+        if (!basename.endsWith('.js')) continue;
+        let source = compilation.assets[basename].source();
+        if (typeof source !== 'string') source = source.toString();
+        const cleaned = cleanCode(source);
+        if (cleaned !== source) {
+          compilation.assets[basename] = {
+            source: () => cleaned,
+            size: () => Buffer.byteLength(cleaned, 'utf8'),
+          };
+        }
+      }
+    });
+  }
+}
 
 const plugins = [
   new webpack.DefinePlugin({
@@ -25,6 +45,7 @@ const plugins = [
     cssProcessorOptions: { discardComments: { removeAll: true } },
     canPrint: true,
   }),
+  new CleanForAmoPlugin(),
 ];
 
 module.exports = {

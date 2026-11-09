@@ -21,7 +21,7 @@ LogManager.SWITCH_GROUP_WITH_LOST = "SWITCH_GROUP_WITH_LOST"
 
 LogManager.logs = [];
 
-const extensionPrefix = browser.extension.getURL('/');
+const extensionPrefix = browser.runtime.getURL('/');
 
 // Before the options and the logmanager are fully started, we always log
 LogManager.isEnable = function() {
@@ -230,7 +230,7 @@ LogManager.downloadLog = async function downloadLog(logs=LogManager.logs) {
 LogManager.showErrorNotification = function() {
   browser.notifications.create(LogManager.NOTIFICATION_ID, {
     type: 'basic',
-    iconUrl: browser.extension.getURL("/share/icons/tabspace-active-64.png"),
+    iconUrl: browser.runtime.getURL("/share/icons/tabspace-active-64.png"),
     title: "Error caught in Sync Tab Groups",
     message: "An unexpected behavior happened in Sync Tab Groups. In order to improve the extension, could you send me the error back. Click on this notification to open the explanation on how to do it.",
   });
