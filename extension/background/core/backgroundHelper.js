@@ -45,8 +45,13 @@ BackgroundHelper.onRemoveHiddenTab = function({tabId}) {
 
 BackgroundHelper.onRemoveHiddenTabsInGroup = function({groupId}) {
   const groupIndex = GroupManager.getGroupIndexFromGroupId(groupId);
-  const tabIds = GroupManager.groups[groupIndex].tabs.map(({id}) => id);
-  TabHidden.closeHiddenTabs(tabIds);
+  if (groupIndex === -1) return;
+  const tabIds = GroupManager.groups[groupIndex].tabs
+    .filter(tab => tab.hidden)
+    .map(({id}) => id);
+  if (tabIds.length > 0) {
+    TabHidden.closeHiddenTabs(tabIds);
+  }
 };
 
 BackgroundHelper.onOpenGroupInNewWindow = function({groupId}) {
@@ -127,10 +132,13 @@ BackgroundHelper.onGroupRename = function({
   groupId,
   title,
 }) {
-  GroupManager.renameGroup(
-    GroupManager.getGroupIndexFromGroupId(groupId),
-    title
-  );
+  const groupIndex = GroupManager.getGroupIndexFromGroupId(groupId, {error: false});
+  if (groupIndex > -1) {
+    GroupManager.renameGroup(
+      groupIndex,
+      title
+    );
+  }
 };
 
 BackgroundHelper.onGroupSelect = function({groupId}) {

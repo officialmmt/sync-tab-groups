@@ -90,10 +90,12 @@ WindowManager.decoratorCurrentlyChanging = function(func) {
     } catch (e) {
       LogManager.error(e, {args: arguments});
     } finally { // Clean
-      const windowShouldBeClear = WindowManager.WINDOW_CURRENTLY_SWITCHING
-        .hasOwnProperty(currentWindow.id);
-      if (windowShouldBeClear) {
-        delete WindowManager.WINDOW_CURRENTLY_SWITCHING[currentWindow.id];
+      if (currentWindow && currentWindow.id != null) {
+        const windowShouldBeClear = WindowManager.WINDOW_CURRENTLY_SWITCHING
+          .hasOwnProperty(currentWindow.id);
+        if (windowShouldBeClear) {
+          delete WindowManager.WINDOW_CURRENTLY_SWITCHING[currentWindow.id];
+        }
       }
 
       if (previousGroupId != null && previousGroupId>-1) {
@@ -345,6 +347,9 @@ WindowManager.selectNextGroup = async function({
 
     // Search next unopened group
     let sortedIndex = getGroupIndexSortedByPosition(GroupManager.groups);
+    if (sortedIndex.length === 0) {
+      return -1;
+    }
     let roundIndex = sortedIndex.indexOf(sourceGroupIndex);
     for (let i = 0; i < sortedIndex.length - 1; i++) {
       roundIndex = (roundIndex + sortedIndex.length + direction) % sortedIndex.length;
@@ -473,7 +478,7 @@ WindowManager.openGroupInNewWindow = async function(groupId) {
  * @param {Group} group
  */
 WindowManager.setWindowPrefixGroupTitle = async function(windowId, group) {
-  if (!Utils.hasWindowTitlePreface()) {
+  if (!group || !Utils.hasWindowTitlePreface()) {
     return;
   }
   try {
@@ -504,12 +509,13 @@ WindowManager.associateGroupIdToWindow = async function(windowId, groupId) {
     GroupManager.setLastAccessed(groupId, Date.now());
     if (Utils.hasWindowTitlePreface()) {
       if (OptionManager.options.groups.showGroupTitleInWindow) {
-        let group = GroupManager.groups[
-          GroupManager.getGroupIndexFromGroupId(
-            groupId, {error: false}
-          )
-        ];
-        WindowManager.setWindowPrefixGroupTitle(windowId, group);
+        let groupIndex = GroupManager.getGroupIndexFromGroupId(
+          groupId, {error: false}
+        );
+        if (groupIndex > -1) {
+          let group = GroupManager.groups[groupIndex];
+          WindowManager.setWindowPrefixGroupTitle(windowId, group);
+        }
       }
     }
     if (Utils.hasSessionWindowValue()) {
@@ -602,7 +608,7 @@ WindowManager.integrateWindowWithTabsComparaison = async function(windowId, {
   let bestId = GroupManager.bestMatchGroup(tabs);
 
   let id = -1;
-  if (bestId > 0) { // Keep the best result
+  if (bestId >= 0) { // Keep the best result
     await GroupManager.attachWindowWithGroupId(bestId, windowId);
     id = bestId;
   }

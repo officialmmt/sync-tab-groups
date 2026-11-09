@@ -6,9 +6,11 @@ import LogManager from '../error/logmanager'
 import OptionManager from '../core/optionmanager'
 import GroupManager from '../core/groupmanager'
 import OPTION_CONSTANTS from '../core/OPTION_CONSTANTS'
+import BACKUP_LOCATION from './BACKUP_LOCATION'
 
 const BackupStorage = {};
 
+BackupStorage.LOCATION = BACKUP_LOCATION;
 BackupStorage.TIMERS = Utils.setObjectPropertiesWith(OPTION_CONSTANTS.TIMERS(), undefined);
 
 

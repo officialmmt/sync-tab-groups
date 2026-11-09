@@ -84,9 +84,9 @@ OptionManager.updateOption = async function(optionName, optionValue) {
     await OptionManager.onRemoveUnknownHiddenTabsChange(optionValue);
     break;
   }
-  if (optionName.startsWith("backup-time-")) {
+  if (optionName.startsWith("backup-download-time-") || optionName.startsWith("backup-time-")) {
     OptionManager.onBackUpTimerChange(
-      optionName.substring("backup-download-time-".length),
+      optionName.replace(/^backup-(download-)?time-/, ""),
       optionValue);
   }
 
@@ -283,7 +283,8 @@ OptionManager.initEventListener = function() {
 }
 
 OptionManager.reloadOptionsFromDisk = async function() {
-  OptionManager.options = await ExtensionStorageManager.Local.loadGroups();
+  let options = await ExtensionStorageManager.Local.loadOptions();
+  OptionManager.options = OptionManager.check_integrity(options);
 }
 
 OptionManager.checkCorruptedOptions = function(options=OptionManager.options) {

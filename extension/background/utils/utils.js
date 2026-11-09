@@ -161,19 +161,6 @@ Utils.hasWindowTitlePreface = () => Utils.isFirefox();
 Utils.hasHideFunction = () =>  browser.tabs.hide != null;
 
 /**
- * Return true if the browser is Chrome
- * @returns {boolean}
- * @deprecated
- */
-Utils.isChrome = function() {
-  if (browser.sessions.getWindowValue == null &&
-    browser.tabs.discard != null) {
-    return true;
-  }
-  return false;
-}
-
-/**
  * Return true if the browser is FF57 or above
  * @returns {boolean}
  * @deprecated

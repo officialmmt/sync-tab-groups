@@ -714,6 +714,9 @@ GroupManager.updateAllOpenedGroups = async function() {
  * @param {string} title - the new title
  */
 GroupManager.renameGroup = function(groupIndex, title) {
+  if (groupIndex === -1 || !GroupManager.groups[groupIndex]) {
+    return;
+  }
   GroupManager.groups[groupIndex].title = title;
 
   if (GroupManager.groups[groupIndex].windowId !== browser.windows.WINDOW_ID_NONE) {
@@ -898,10 +901,11 @@ GroupManager.removeEmptyGroup = function({
  * @returns {boolean}
  */
 GroupManager.isGroupIndexInOpenWindow = function(groupIndex) {
-  if (GroupManager.groups[groupIndex].windowId !== browser.windows.WINDOW_ID_NONE)
+  if (groupIndex > -1 && GroupManager.groups[groupIndex] && GroupManager.groups[groupIndex].windowId !== browser.windows.WINDOW_ID_NONE) {
     return true;
-  else
+  } else {
     return false;
+  }
 }
 
 /**

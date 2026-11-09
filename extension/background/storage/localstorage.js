@@ -37,7 +37,8 @@ LocalStorage.loadGroups = async function() {
     if (groups.length === 0) LogManager.information(`LocalStorage.loadGroups loaded empty group.`)
     return groups;
   } catch (e) {
-    return "LocalStorage.loadGroups failed... " + e;
+    LogManager.error(e, {args: arguments});
+    return [];
   }
 }
 
@@ -65,7 +66,8 @@ LocalStorage.loadOptions = async function() {
   try {
     return (await browser.storage.local.get({"options": OPTION_CONSTANTS.TEMPLATE()})).options;
   } catch (e) {
-    return "LocalStorage.loadOptions failed... " + e;
+    LogManager.error(e, {args: arguments});
+    return OPTION_CONSTANTS.TEMPLATE();
   }
 }
 

@@ -13,6 +13,10 @@ const BookmarkStorage = {};
 BookmarkStorage.ROOT = "SyncTabGroups";
 BookmarkStorage.ROOT_ID = null;
 
+BookmarkStorage.getBackupFolderTitle = function() {
+  return (OptionManager.options && OptionManager.options.bookmarks.folder) ? OptionManager.options.bookmarks.folder : "Default";
+};
+
 BookmarkStorage.repeatedtask = new TaskManager.RepeatedTask(30000);
 
 
@@ -51,7 +55,7 @@ BookmarkStorage.saveGroups = async function(groups) {
 
     // 1. Create root
     const bmRoot = await browser.bookmarks.create({
-      title: OptionManager.options.bookmarks.folder === "" ? "Default" : OptionManager.options.bookmarks.folder,
+      title: BookmarkStorage.getBackupFolderTitle(),
       parentId: BookmarkStorage.ROOT_ID,
     });
 
@@ -86,14 +90,15 @@ BookmarkStorage.saveGroups = async function(groups) {
 /**
  * Delete the previous bookmarks backup folder in Bookmark.ROOT
  */
-BookmarkStorage.cleanGroups = async function(title = BookmarkStorage.BACKUP_OLD) {
+BookmarkStorage.cleanGroups = async function() {
   try {
     const bookmarks_groups = await browser.bookmarks.getSubTree(
       BookmarkStorage.ROOT_ID
     );
 
+    const folderTitle = BookmarkStorage.getBackupFolderTitle();
     for (let b of bookmarks_groups[0].children) {
-      if (b.title === OptionManager.options.bookmarks.folder) {
+      if (b.title === folderTitle) {
         await browser.bookmarks.removeTree(b.id);
       }
     }
@@ -113,14 +118,15 @@ BookmarkStorage.init = async function() {
     const searchResults = await browser.bookmarks.search({
       title: BookmarkStorage.ROOT,
     });
+    const folderResult = searchResults.find(bm => !bm.url);
 
-    if (searchResults.length === 0) {
+    if (!folderResult) {
       const folder = await browser.bookmarks.create({
         title: BookmarkStorage.ROOT,
       });
       BookmarkStorage.ROOT_ID = folder.id;
     } else {
-      BookmarkStorage.ROOT_ID = searchResults[0].id;
+      BookmarkStorage.ROOT_ID = folderResult.id;
     }
     return "Bookmark.init done!";
   } catch (e) {

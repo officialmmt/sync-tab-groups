@@ -1,6 +1,7 @@
 import BackgroundHelper from '../core/backgroundHelper'
 import OptionManager from '../core/optionmanager'
 import TabManager from '../core/tabmanager/tabManager'
+import TabHidden from '../core/tabhidden'
 
 const OptionsMessenger = {};
 
@@ -38,9 +39,9 @@ OptionsMessenger.optionMessenger = function(message) {
   case "Option:UndiscardLazyTabs":
     TabManager.undiscardAll();
     break;
-    /*   case "Option:CloseAllHiddenTabs":
+  case "Option:CloseAllHiddenTabs":
     TabHidden.removeAllHiddenTabs();
-    break; */
+    break;
   case "Option:RemoveBackUp":
     BackgroundHelper.onRemoveBackUp(message.params.id);
     break;

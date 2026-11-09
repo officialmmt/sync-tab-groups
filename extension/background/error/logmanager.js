@@ -8,7 +8,7 @@ window.LogManager = LogManager
 LogManager.LOG_NUMBER_LIMIT = 10000;
 LogManager.NOTIFICATION_ID = "LOG_ERROR";
 LogManager.BACK = "LOG_BACK";
-LogManager.BACK = "LOG_FRONT";
+LogManager.FRONT = "LOG_FRONT";
 LogManager.LOCATION = LogManager.BACK;
 
 LogManager.EXTENSION_INSTALLED = "EXTENSION_INSTALLED"

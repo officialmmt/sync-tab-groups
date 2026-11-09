@@ -121,7 +121,7 @@ async function openListOfTabs(tabsToOpen, windowId, {
       && !forceOpenNewTab
     ) {
       // Else open new New Tab
-      const notPinnedTabs = tabs.filter(tab => !tab.pinnded);
+      const notPinnedTabs = tabs.filter(tab => !tab.pinned);
       if (notPinnedTabs.length === 1 && isNewTab(notPinnedTabs[0].url)) {
         // open only a new tab that was already open
         return tabs;

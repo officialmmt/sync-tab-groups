@@ -84,9 +84,9 @@ async function changePinState(groupId, tabIndex) {
       await GroupManager.removeTabFromIndexInGroupId(groupId, tabIndex);
       // Last position for pinned or first for normal
       await GroupManager.addTabInGroupId(
-        groupId, tab, tab.pinned
-          ? -1
-          : 0);
+        groupId, tab, {
+          targetIndex: tab.pinned ? -1 : 0,
+        });
     }
     return "changePinState done!";
   } catch (e) {

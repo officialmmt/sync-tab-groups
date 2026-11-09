@@ -119,14 +119,18 @@ TabHidden.changeHiddenStateForTab = function(tabId, value=false) {
 // Close hidden tabs and change hidden property to false if part of a group
 TabHidden.closeHiddenTabs = async function(tabIds) {
   if (!Array.isArray(tabIds)) {
-    tabIds = [tabIds]
+    tabIds = [tabIds];
+  }
+
+  if (tabIds.length === 0) {
+    return;
   }
 
   try {
     await browser.tabs.remove(tabIds);
   } catch (e) {LogManager.error(e, {args: arguments})}
 
-  tabIds.forEach(TabHidden.changeHiddenStateForTab);
+  tabIds.forEach((id) => TabHidden.changeHiddenStateForTab(id, false));
 
   GroupManager.eventlistener.fire(GroupManager.EVENT_PREPARE);
 }

@@ -33,7 +33,9 @@ ContextMenu.createMoveTabMenu = async function() {
     for (let id of ContextMenu.MoveTabMenuIds) {
       try {
         await browser.contextMenus.remove(id);
-      } catch (e) {return}
+      } catch (e) {
+        // Ignore if already removed
+      }
     }
     await Utils.wait(100)
     ContextMenu.MoveTabMenuIds.length = 0;

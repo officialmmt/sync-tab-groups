@@ -26,6 +26,51 @@ Check the [website](https://morikko.github.io/synctabgroups/) for more informati
 [![Try it now on Firefox](https://user-images.githubusercontent.com/7831572/36659929-7ecb2042-1ad6-11e8-82a4-0628702e354e.png)](https://addons.mozilla.org/en-US/firefox/addon/sync-tab-groups/)
 
 [![Try it now on Chrome](https://user-images.githubusercontent.com/7831572/36659935-8402879e-1ad6-11e8-83f7-d645a108696a.png)](https://chrome.google.com/webstore/detail/sync-tab-groups/gbkddinkjahdfhaiifploahejhmaaeoa)
+
+---
+
+# Releases & Installation
+
+Production-ready packages for all supported browsers are generated in the [`release/`](./release) folder:
+
+### 🦊 Mozilla Firefox
+* **Package Files:**
+  * [`release/sync-tab-groups-firefox.xpi`](./release/sync-tab-groups-firefox.xpi) (or [`release/firefox/sync-tab-groups-0.8.2-firefox.xpi`](./release/firefox/sync-tab-groups-0.8.2-firefox.xpi))
+  * [`release/sync-tab-groups-firefox.zip`](./release/sync-tab-groups-firefox.zip)
+* **Installation:**
+  * **Temporary (Any Firefox version):**
+    1. Navigate to `about:debugging#/runtime/this-firefox`.
+    2. Click **"Load Temporary Add-on..."**.
+    3. Select `release/sync-tab-groups-firefox.xpi` or `release/build/manifest.json`.
+  * **Permanent (Firefox Developer Edition / Nightly):**
+    1. Go to `about:config` and set `xpinstall.signatures.required` to `false`.
+    2. Drag and drop `release/sync-tab-groups-firefox.xpi` into Firefox.
+
+### 🌐 Chromium-based Browsers (Google Chrome, Microsoft Edge, Brave, Opera, Vivaldi)
+* **Package Files:**
+  * [`release/sync-tab-groups-chrome.zip`](./release/sync-tab-groups-chrome.zip) (or [`release/chrome/sync-tab-groups-0.8.2-chrome.zip`](./release/chrome/sync-tab-groups-0.8.2-chrome.zip))
+  * Unpacked build directory: [`release/chrome/build/`](./release/chrome/build/)
+* **Installation:**
+  1. Open your browser extensions page:
+     * Chrome: `chrome://extensions`
+     * Edge: `edge://extensions`
+     * Brave: `brave://extensions`
+     * Opera: `opera://extensions`
+  2. Toggle **"Developer mode"** in the top-right corner.
+  3. Click **"Load unpacked"** and select the [`release/chrome/build/`](./release/chrome/build/) folder (or extract `sync-tab-groups-chrome.zip` and select its folder).
+
+---
+
+# Maintenance & Bug Fixes (v0.8.2+)
+
+Critical bug fixes and stability improvements applied without altering existing workflows:
+* **Option Loading Integrity:** Fixed `OptionManager.reloadOptionsFromDisk` which inadvertently loaded groups into options, preventing unrecoverable `TypeError` crashes.
+* **Pin State Synchronization:** Fixed argument shape mismatch in `GroupManager.addTabInGroupId` when switching pinned tab status.
+* **Hidden Tabs Handling:** Fixed `BackgroundHelper.onRemoveHiddenTabsInGroup` and `TabHidden.closeHiddenTabs` ensuring only hidden tabs are removed, and fixed `forEach` index propagation so closed tabs are properly marked.
+* **Window & Group 0 Association:** Fixed `WindowManager.integrateWindowWithTabsComparaison` skipping group ID `0`, preventing duplicate group creation on startup/window restore.
+* **Backup Timer Settings:** Fixed `OptionManager.updateOption` ID prefix matching so automated backup timers (5m, 1h, 4h, etc.) start/stop properly from preferences.
+* **Bookmark Backup Deduplication:** Standardized backup folder title resolution preventing unbounded "Default" bookmark folder accumulation.
+* **Modern Build Toolchain:** Replaced outdated `node-sass` with modern `sass` (Dart Sass), enabling seamless compilation on modern Node.js versions (v18, v20, v22, v25).
  
 
 # Contributing
@@ -56,7 +101,7 @@ If you find a bug, please [open an issue](https://github.com/Morikko/sync-tab-gr
 # Build
 
 ## External dependencies
- - Node >= 8
+ - Node >= 14 (compatible with modern Node v18, v20, v22, v25+)
  - Firefox Dev Edition (if you want to use web-ext)
 
 ## Scripts (with `npm run`)

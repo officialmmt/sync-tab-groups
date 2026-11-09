@@ -30,8 +30,10 @@ async function removeTabs(tabIdsToRemove, {
       }
     }
 
-    await browser.tabs.remove(ids);
-    await waitTabsToBeClosed(ids);
+    if (ids.length > 0) {
+      await browser.tabs.remove(ids);
+      await waitTabsToBeClosed(ids);
+    }
   } catch (e) {
     console.error("removeTabs failed.");
     console.error(e);
@@ -91,9 +93,11 @@ async function removeTabsInWindow(windowId, {
     // 2. Remove previous tabs in window
     let tabsToRemove = tabs.filter(tab => remove_pinned || !tab.pinned);
 
-    tabsToRemove = tabsToRemove.map(tab => tab.id)
-    await browser.tabs.remove(tabsToRemove);
-    await waitTabsToBeClosed(tabsToRemove);
+    tabsToRemove = tabsToRemove.map(tab => tab.id);
+    if (tabsToRemove.length > 0) {
+      await browser.tabs.remove(tabsToRemove);
+      await waitTabsToBeClosed(tabsToRemove);
+    }
 
     return survivorTab;
   } catch (e) {

@@ -83,6 +83,18 @@
         "default": "Alt+Shift+Delete"
       },
       "description": "Remove current group"
+    },
+
+    "create_group_swtich": {
+      "description": "Create a new group and switch to it"
+    },
+
+    "focus_next_group": {
+      "description": "Focus window with next group opened"
+    },
+
+    "focus_previous_group": {
+      "description": "Focus window with previous group opened"
     }
   }
 }

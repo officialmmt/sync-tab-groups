@@ -13,14 +13,17 @@ CommandsEvent.initCommandsEventListener = function() {
         return "";
       }
       switch (command) {
+      case "switch_next_group":
       case "swtich_next_group":
         WindowManager.selectNextGroup();
         break;
+      case "switch_previous_group":
       case "swtich_previous_group":
         WindowManager.selectNextGroup({
           direction: -1,
         });
         break;
+      case "create_group_switch":
       case "create_group_swtich":
         WindowManager.selectGroup(GroupManager.addGroup());
         break;
@@ -35,6 +38,7 @@ CommandsEvent.initCommandsEventListener = function() {
           open: true,
         });
         break;
+      case "remove_group_switch":
       case "remove_group_swtich":
         await WindowManager.removeGroup();
         //WindowManager.selectNextGroup();

@@ -43,8 +43,8 @@ ImportSelector.onOpenGroupsSelector = async function({
   }
 
   const preUrl = Utils.SELECTOR_PAGE_URL
-  + "?title=" + type + " " + title
-  + "&type=" + type;
+  + "?title=" + encodeURIComponent(type + " " + title)
+  + "&type=" + encodeURIComponent(type);
   const url = browser.extension.getURL(
     preUrl
   );
