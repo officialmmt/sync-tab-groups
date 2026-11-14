@@ -6,7 +6,7 @@ Sync Tab Groups helps you organize browser tabs into groups by topic. You can cl
 
 For screenshots, videos, guides, and more information, visit the [project website](https://morikko.github.io/synctabgroups/).
 
-[![Get Sync Tab Groups for Firefox](https://user-images.githubusercontent.com/7831572/36659929-7ecb2042-1ad6-11e8-82a4-0628702e354e.png)](https://addons.mozilla.org/en-US/firefox/addon/sync-tab-groups/)
+[![Get Sync Tab Groups for Firefox](https://user-images.githubusercontent.com/7831572/36659929-7ecb2042-1ad6-11e8-82a4-0628702e354e.png)](https://addons.mozilla.org/en-US/firefox/addon/tabs-superpower/)
 
 [![Get Sync Tab Groups for Chrome](https://user-images.githubusercontent.com/7831572/36659935-8402879e-1ad6-11e8-83f7-d645a108696a.png)](https://chrome.google.com/webstore/detail/sync-tab-groups/gbkddinkjahdfha...)
 
