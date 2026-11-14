@@ -1,0 +1,96 @@
+name: Build, Package and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Release Tag (e.g. v0.8.3, leave empty to use manifest version)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build extension for production
+        run: npm run build:prod
+
+      - name: Ensure AMO sanitation
+        run: node scripts/remove-evals.js release/build
+
+      - name: Package extension (Firefox & Chromium)
+        run: |
+          mkdir -p release/packages
+          
+          # Extract version from manifest
+          VERSION=$(node -p "require('./extension/manifest.json').version")
+          echo "EXTENSION_VERSION=$VERSION" >> $GITHUB_ENV
+          
+          # Determine release tag name
+          if [ -n "${{ github.event.inputs.tag_name }}" ]; then
+            RELEASE_TAG="${{ github.event.inputs.tag_name }}"
+          elif [ "${{ github.ref_type }}" = "tag" ]; then
+            RELEASE_TAG="${{ github.ref_name }}"
+          else
+            RELEASE_TAG="v${VERSION}"
+          fi
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+
+          # Build Firefox package via web-ext
+          npx web-ext@latest build --source-dir=release/build --artifacts-dir=release/packages --overwrite-dest
+
+          # Create standardized named archives for Firefox
+          cp release/packages/sync_tab_groups-${VERSION}.zip release/packages/sync-tab-groups-v${VERSION}-firefox.zip
+          cp release/packages/sync_tab_groups-${VERSION}.zip release/packages/sync-tab-groups-v${VERSION}-firefox.xpi
+
+          # Build Chromium (Chrome/Edge/Brave/Opera) zip
+          (cd release/build && zip -r ../packages/sync-tab-groups-v${VERSION}-chrome.zip ./*)
+
+          echo "Generated packages:"
+          ls -la release/packages/
+
+      - name: Sign extension with Mozilla AMO (Optional)
+        if: env.AMO_JWT_ISSUER != '' && env.AMO_JWT_SECRET != ''
+        env:
+          AMO_JWT_ISSUER: ${{ secrets.AMO_JWT_ISSUER }}
+          AMO_JWT_SECRET: ${{ secrets.AMO_JWT_SECRET }}
+        run: |
+          echo "AMO secrets detected. Signing extension for Firefox..."
+          npx web-ext@latest sign \
+            --source-dir=release/build \
+            --artifacts-dir=release/packages \
+            --api-key="${AMO_JWT_ISSUER}" \
+            --api-secret="${AMO_JWT_SECRET}" \
+            --channel=unlisted
+          echo "Signed artifacts:"
+          ls -la release/packages/*.xpi || true
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Sync Tab Groups v${{ env.EXTENSION_VERSION }}"
+          tag_name: ${{ env.RELEASE_TAG }}
+          files: release/packages/*
+          generate_release_notes: true
+          draft: false
+          prerelease: false
